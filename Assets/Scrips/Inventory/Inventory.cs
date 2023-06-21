@@ -4,14 +4,16 @@ using UnityEngine;
 using UnityEngine.UI;
 public class Inventory : MonoBehaviour
 {
+   
+
     [SerializeField] private Transform transformTransform;
     public int SizeX, SizeY;
     public Cell cellPrefab;
     public Cell[,] cells;
 
-
     public GridLayoutGroup layoutGroup;
 
+    public Item draggenItemPref;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,18 +30,18 @@ public class Inventory : MonoBehaviour
 
     private void CreateNewInventory()
     {
-        for (int i = 0; i < SizeY; i++)
+        for (int y = 0; y < SizeY; y++)
         {
-            for (int j = 0; j < SizeX; j++)
+            for (int x = 0; x < SizeX; x++)
             {
                 var newCell = Instantiate(cellPrefab, transformTransform);
-                newCell.name = "cell" + i + j;
-                newCell.ChangeCoordinateX(j);
-                newCell.ChangeCoordinateY(i);
+                newCell.name = "cell" + x + y;
+                newCell.ChangeCoordinateX(x);
+                newCell.ChangeCoordinateY(y);
                 newCell.IsFreeChange(true);
                 newCell.inventory = this;
-                newCell.CellIndex.text = i + " " + j;
-                cells[i, j] = newCell;
+                newCell.CellIndex.text = x + " " + y;
+                cells[x, y] = newCell;
             }
         }
     }

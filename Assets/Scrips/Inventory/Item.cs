@@ -2,8 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler
+public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
 {
+    [SerializeField]
+    Canvas canvas;
+
+    public Inventory inventory;
+    public Cell PrevCell;
     RectTransform rectTransform;
     CanvasGroup canvasGroup;
     Vector2 positionItem;
@@ -17,22 +22,14 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
     private readonly int LargeHorizontal = 2;
     private readonly int LargeVertical = 5;
 
-    /*
-     
-     
-    private readonly float smallSizeSqure = 1f; 
-    private readonly float MediuimHorizontal = 1f;
-    private readonly float MediumVertical = 3f;
-    private readonly float MediumSquare = 2;
-    private readonly float LargeHorizontal = 2f;
-    private readonly float LargeVertical = 5f;  
-     */
+   
 
     // Start is called before the first frame update
     void Start()
     {
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
+
     }
 
     // Update is called once per frame
@@ -42,18 +39,18 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
     {
         canvasGroup.alpha = 0.7f;
         canvasGroup.blocksRaycasts = false;
+        inventory.draggenItemPref = this;
     }
     public void OnEndDrag(PointerEventData eventData)
     {
         canvasGroup.alpha = 1;
         canvasGroup.blocksRaycasts = true;
+        inventory.draggenItemPref = null;
+        
     }
     public void OnDrag(PointerEventData eventData) // follow to arrow
     {
-        positionItem = Input.mousePosition;
-        positionItem.x -= Screen.width/2;
-        positionItem.y -= Screen.height/2;
-        rectTransform.anchoredPosition = positionItem;
+        rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
     }
     public Vector2 GetSize()
     {
@@ -76,5 +73,35 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
 
         }
         return size = Vector2Int.zero;
+    }
+
+    public void OnDrop(PointerEventData eventData)
+    {
+        
+        var dragItem = eventData.pointerDrag.GetComponent<Item>();
+        dragItem.transform.SetParent(dragItem.PrevCell.transform);
+        dragItem.transform.localPosition = Vector3.zero;
+
+        var itemSize = dragItem.GetSize();
+        var newPos = dragItem.transform.localPosition;
+        if (itemSize.x > 1)
+        {
+
+            float spacingBetweenItems = (itemSize.x - 1) * inventory.layoutGroup.spacing.x / 2;
+
+            newPos.x += ((itemSize.x - 1) * inventory.layoutGroup.cellSize.x / 2 + spacingBetweenItems);
+        }
+        if (itemSize.y > 1)
+        {
+            float spacingBetweenItems = (itemSize.y - 1) * inventory.layoutGroup.spacing.y / 2;
+
+            Debug.Log("itemSize.y = " + itemSize.y);
+
+            newPos.y -= ((itemSize.y - 1) * inventory.layoutGroup.cellSize.y / 2 + spacingBetweenItems);
+
+        }
+        dragItem.transform.localPosition = newPos;
+        dragItem.transform.SetParent(inventory.transform);//cancel set to parent
+
     }
 }
