@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
 {
     [SerializeField]
@@ -9,11 +10,21 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
 
     public Inventory inventory;
     public Cell PrevCell;
-    RectTransform rectTransform;
-    CanvasGroup canvasGroup;
-    Vector2 positionItem;
+    private RectTransform rectTransform;
+    private CanvasGroup canvasGroup;
+    private Vector2 positionItem;
+    private Image image;
+
     public ItemSize itemSize;
-    
+    public string nameOfObject;
+    public Sprite spriteOfObject;
+    [SerializeField]
+    private bool isItemSetToInventory;//the task says that this is a float variable, but it is definitely bool
+
+
+
+
+
 
     private readonly int smallSizeSqure = 1; 
     private readonly int MediuimHorizontal = 1;
@@ -27,6 +38,11 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
     {
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
+        image = GetComponent<Image>();
+        spriteOfObject = image.sprite;
+
+        nameOfObject = image.sprite.name;
+        name = nameOfObject + GetSize().x + GetSize().y;
     }
 
 
@@ -85,30 +101,35 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
 
     public void SetPosition(Item item, Cell cell)
     {
-        item.transform.SetParent(cell.transform);
-        item.transform.localPosition = Vector3.zero;
-
-        var itemSize = item.GetSize();
-        var newPos = item.transform.localPosition;
-        if (itemSize.x > 1)
+        if (cell && item) //protection against leaving the item outside the inventory when first placed
         {
 
-            float spacingBetweenItems = (itemSize.x - 1) * inventory.layoutGroup.spacing.x / 2;
 
-            newPos.x += ((itemSize.x - 1) * inventory.layoutGroup.cellSize.x / 2 + spacingBetweenItems);
+            item.transform.SetParent(cell.transform);
+            item.transform.localPosition = Vector3.zero;
+
+            var itemSize = item.GetSize();
+            var newPos = item.transform.localPosition;
+            if (itemSize.x > 1)
+            {
+                float spacingBetweenItems = (itemSize.x - 1) * inventory.layoutGroup.spacing.x / 2;
+
+                newPos.x += ((itemSize.x - 1) * inventory.layoutGroup.cellSize.x / 2 + spacingBetweenItems);
+            }
+            if (itemSize.y > 1)
+            {
+                float spacingBetweenItems = (itemSize.y - 1) * inventory.layoutGroup.spacing.y / 2;
+
+                Debug.Log("itemSize.y = " + itemSize.y);
+
+                newPos.y -= ((itemSize.y - 1) * inventory.layoutGroup.cellSize.y / 2 + spacingBetweenItems);
+
+            }
+            item.transform.localPosition = newPos;
+            item.transform.SetParent(inventory.transform);//cancel set to parent
+            inventory.CellsOccupation(cell, item.itemSize, false);
+            inventory.UpdateCellColor();//when dragging an item outside the inventory border, painting over extra green
         }
-        if (itemSize.y > 1)
-        {
-            float spacingBetweenItems = (itemSize.y - 1) * inventory.layoutGroup.spacing.y / 2;
-
-            Debug.Log("itemSize.y = " + itemSize.y);
-
-            newPos.y -= ((itemSize.y - 1) * inventory.layoutGroup.cellSize.y / 2 + spacingBetweenItems);
-
-        }
-        item.transform.localPosition = newPos;
-        item.transform.SetParent(inventory.transform);//cancel set to parent
-        inventory.CellsOccupation(cell, item.itemSize, false);
-        inventory.UpdateCellColor();//when dragging an item outside the inventory border, painting over extra green
+        
     }
 }

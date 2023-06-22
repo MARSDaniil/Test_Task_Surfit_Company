@@ -4,19 +4,19 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
 using UnityEngine.UI;
-public class Cell : MonoBehaviour, IDropHandler, IPointerEnterHandler,IPointerExitHandler
+public class Cell : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public TMP_Text CellIndex;
     public TMP_Text CellText;
 
-    
+
 
     private int xCoorinate;
     private int yCoorinate;
 
     [SerializeField]
     private bool isFree;
-    
+
     public Inventory inventory;
 
     public Image image;
@@ -87,22 +87,25 @@ public class Cell : MonoBehaviour, IDropHandler, IPointerEnterHandler,IPointerEx
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-       if(inventory.draggenItemPref )
-       {
+        if (inventory.draggenItemPref)
+        {
             if (isFree)
             {
                 inventory.CellsColorize(this, inventory.draggenItemPref.itemSize, Color.green);
             }
-          
-       }
+
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if(isFree)
-        {
-            inventory.CellsColorize(this, inventory.draggenItemPref.itemSize, Color.white);
-        }
+        if (inventory.draggenItemPref)
+        { 
+            if (isFree)
+            {
+                inventory.CellsColorize(this, inventory.draggenItemPref.itemSize, Color.white);
+            }
+        } 
     }
 
 }
