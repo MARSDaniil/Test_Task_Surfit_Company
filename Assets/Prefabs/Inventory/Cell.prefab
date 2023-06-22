@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4432125672203277888
 RectTransform:
   m_ObjectHideFlags: 0
@@ -228,7 +228,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CellIndex: {fileID: 266549234607144735}
   CellText: {fileID: 4262757172633385187}
+  isFree: 0
   inventory: {fileID: 0}
+  image: {fileID: 0}
 --- !u!1 &4771042078062985250
 GameObject:
   m_ObjectHideFlags: 0
@@ -246,7 +248,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4951816034457406769
 RectTransform:
   m_ObjectHideFlags: 0

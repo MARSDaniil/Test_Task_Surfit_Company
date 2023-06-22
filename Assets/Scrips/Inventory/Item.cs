@@ -13,7 +13,7 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
     CanvasGroup canvasGroup;
     Vector2 positionItem;
     public ItemSize itemSize;
-
+    
 
     private readonly int smallSizeSqure = 1; 
     private readonly int MediuimHorizontal = 1;
@@ -22,24 +22,24 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
     private readonly int LargeHorizontal = 2;
     private readonly int LargeVertical = 5;
 
-   
 
-    // Start is called before the first frame update
     void Start()
     {
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
-
     }
 
-    // Update is called once per frame
- 
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         canvasGroup.alpha = 0.7f;
         canvasGroup.blocksRaycasts = false;
         inventory.draggenItemPref = this;
+        inventory.UpdateCellColor();
+        if(PrevCell)
+        {
+            inventory.CellsOccupation(PrevCell, itemSize, true);
+        } 
     }
     public void OnEndDrag(PointerEventData eventData)
     {
@@ -79,11 +79,17 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
     {
         
         var dragItem = eventData.pointerDrag.GetComponent<Item>();
-        dragItem.transform.SetParent(dragItem.PrevCell.transform);
-        dragItem.transform.localPosition = Vector3.zero;
+        SetPosition(dragItem, dragItem.PrevCell);
 
-        var itemSize = dragItem.GetSize();
-        var newPos = dragItem.transform.localPosition;
+    }
+
+    public void SetPosition(Item item, Cell cell)
+    {
+        item.transform.SetParent(cell.transform);
+        item.transform.localPosition = Vector3.zero;
+
+        var itemSize = item.GetSize();
+        var newPos = item.transform.localPosition;
         if (itemSize.x > 1)
         {
 
@@ -100,8 +106,9 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
             newPos.y -= ((itemSize.y - 1) * inventory.layoutGroup.cellSize.y / 2 + spacingBetweenItems);
 
         }
-        dragItem.transform.localPosition = newPos;
-        dragItem.transform.SetParent(inventory.transform);//cancel set to parent
-
+        item.transform.localPosition = newPos;
+        item.transform.SetParent(inventory.transform);//cancel set to parent
+        inventory.CellsOccupation(cell, item.itemSize, false);
+        inventory.UpdateCellColor();//when dragging an item outside the inventory border, painting over extra green
     }
 }
