@@ -76,12 +76,12 @@ public class Cell : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerE
         var dragItem = eventData.pointerDrag.GetComponent<Item>();
         if (inventory.CheckCellFree(this, dragItem.itemSize))
         {
-            dragItem.SetPosition(dragItem, this);
+            dragItem.SetPosition(dragItem, this,inventory);
             dragItem.PrevCell = this; //assigning a cell when hitting a cell
         }
         else
         {
-            dragItem.SetPosition(dragItem, dragItem.PrevCell);
+            dragItem.SetPosition(dragItem, dragItem.PrevCell,inventory);
         }
     }
 

@@ -5,14 +5,16 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler, IDropHandler
 {
-    [SerializeField]
-    Canvas canvas;
-
+    
+    private Canvas canvas;
     public Inventory inventory;
+
+    private Canvas canvasPocket;
+    public Inventory inventoryPocket;
+
     public Cell PrevCell;
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
-    private Vector2 positionItem;
     private Image image;
 
     public ItemSize itemSize;
@@ -33,12 +35,36 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
     private readonly int LargeHorizontal = 2;
     private readonly int LargeVertical = 5;
 
-
-    void Start()
+    private void Awake()
     {
+        GameObject inventoryGameObject = GameObject.Find("InventoryCanvas");
+        canvas = inventoryGameObject.GetComponent<Canvas>();
+        inventory = inventoryGameObject.GetComponent<Inventory>();
+
+        if (inventory == null)
+        {
+            Debug.LogError("inventoryBag == null");
+        }
+
+
+        GameObject pocketGameObject = GameObject.Find("pocketCanvas");
+        canvasPocket = pocketGameObject.GetComponent<Canvas>();
+        inventoryPocket = pocketGameObject.GetComponent<Inventory>();
+        
+        if(inventoryPocket == null)
+        {
+            Debug.LogError("inventoryPocket == null");
+        }
+
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
         image = GetComponent<Image>();
+
+
+    }
+    void Start()
+    {
+        
         spriteOfObject = image.sprite;
 
         nameOfObject = image.sprite.name;
@@ -50,19 +76,33 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
     {
         canvasGroup.alpha = 0.7f;
         canvasGroup.blocksRaycasts = false;
-        inventory.draggenItemPref = this;
-        inventory.UpdateCellColor();
-        if(PrevCell)
+
+        OnBeginDragOtherInventary(inventory);
+        OnBeginDragOtherInventary(inventoryPocket);
+
+    }
+
+    private void OnBeginDragOtherInventary(Inventory invent)
+    {
+        invent.draggenItemPref = this;
+        invent.UpdateCellColor();
+        if (PrevCell)
         {
-            inventory.CellsOccupation(PrevCell, itemSize, true);
-        } 
+            invent.CellsOccupation(PrevCell, itemSize, true);
+        }
     }
     public void OnEndDrag(PointerEventData eventData)
     {
         canvasGroup.alpha = 1;
         canvasGroup.blocksRaycasts = true;
-        inventory.draggenItemPref = null;
-        
+
+        EndDragItem(inventory);
+        EndDragItem(inventoryPocket);
+    }
+
+    private void EndDragItem(Inventory invent)
+    {
+        invent.draggenItemPref = null;
     }
     public void OnDrag(PointerEventData eventData) // follow to arrow
     {
@@ -95,11 +135,12 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
     {
         
         var dragItem = eventData.pointerDrag.GetComponent<Item>();
-        SetPosition(dragItem, dragItem.PrevCell);
+        SetPosition(dragItem, dragItem.PrevCell,inventory);
+        SetPosition(dragItem, dragItem.PrevCell,inventoryPocket);
 
     }
 
-    public void SetPosition(Item item, Cell cell)
+    public void SetPosition(Item item, Cell cell, Inventory inventory)
     {
         if (cell && item) //protection against leaving the item outside the inventory when first placed
         {
