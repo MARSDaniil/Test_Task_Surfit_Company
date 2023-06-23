@@ -10,7 +10,7 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
     public Inventory inventory;
 
     private Canvas canvasPocket;
-    public Inventory inventoryPocket;
+    //public Inventory inventoryPocket;
 
     public Cell PrevCell;
     private RectTransform rectTransform;
@@ -49,13 +49,14 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
 
         GameObject pocketGameObject = GameObject.Find("pocketCanvas");
         canvasPocket = pocketGameObject.GetComponent<Canvas>();
+        /*
         inventoryPocket = pocketGameObject.GetComponent<Inventory>();
         
         if(inventoryPocket == null)
         {
             Debug.LogError("inventoryPocket == null");
         }
-
+        */
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
         image = GetComponent<Image>();
@@ -78,7 +79,7 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
         canvasGroup.blocksRaycasts = false;
 
         OnBeginDragOtherInventary(inventory);
-        OnBeginDragOtherInventary(inventoryPocket);
+       // OnBeginDragOtherInventary(inventoryPocket);
 
     }
 
@@ -97,7 +98,7 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
         canvasGroup.blocksRaycasts = true;
 
         EndDragItem(inventory);
-        EndDragItem(inventoryPocket);
+    //    EndDragItem(inventoryPocket);
     }
 
     private void EndDragItem(Inventory invent)
@@ -136,7 +137,7 @@ public class Item : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
         
         var dragItem = eventData.pointerDrag.GetComponent<Item>();
         SetPosition(dragItem, dragItem.PrevCell,inventory);
-        SetPosition(dragItem, dragItem.PrevCell,inventoryPocket);
+       // SetPosition(dragItem, dragItem.PrevCell,inventoryPocket);
 
     }
 

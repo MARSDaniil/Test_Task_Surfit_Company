@@ -37,7 +37,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -246.90001, y: -444.60004}
+  m_AnchoredPosition: {x: 120, y: -30}
   m_SizeDelta: {x: 250, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7366263153805235624
@@ -90,8 +90,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f45f227304e6e04dbba4575417c5c1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 0}
   inventory: {fileID: 0}
+  inventoryPocket: {fileID: 0}
   PrevCell: {fileID: 0}
   itemSize: 5
   nameOfObject: rifle
